@@ -1,6 +1,7 @@
 "use client";
 import { Spinner } from "@/components/spinner";
 import { useConvexAuth } from "convex/react";
+import { redirect } from "next/navigation";
 import React from "react";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
@@ -12,8 +13,15 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
+  if (!isAuthenticated) {
+    return redirect("/");
+  }
 
-  return <div>{children}</div>;
+  return (
+    <div className="h-full flex dark:bg-[#1F1F1F]">
+      <main className="flex-1 overflow-y-auto">{children}</main>
+    </div>
+  );
 };
 
 export default MainLayout;
