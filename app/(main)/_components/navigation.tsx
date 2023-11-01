@@ -26,8 +26,10 @@ import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import DocumentList from "./document-list";
 import TrashBox from "./trash-box";
+import { useSearch } from "@/hooks/use-search";
 
 const Navigation = () => {
+  const search = useSearch();
   const pathName = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const create = useMutation(api.documents.create);
@@ -85,6 +87,7 @@ const Navigation = () => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };
+
   const resetWidth = () => {
     if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(false);
@@ -95,7 +98,7 @@ const Navigation = () => {
         "width",
         isMobile ? "0" : "calc(100% - 240px)"
       );
-      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "240px");
+      navbarRef.current.style.setProperty("left", isMobile ? "0" : "240px");
       setTimeout(() => {
         setIsResetting(false);
       }, 300);
@@ -148,7 +151,12 @@ const Navigation = () => {
         <div>
           <UserItem></UserItem>
           <Item label="Setting" icon={Settings} onClick={() => {}}></Item>
-          <Item label="Search" icon={Search} isSearch onClick={() => {}}></Item>
+          <Item
+            label="Search"
+            icon={Search}
+            isSearch
+            onClick={search.onOpen}
+          ></Item>
           <Item
             onClick={handleCreate}
             label="New page"
@@ -157,11 +165,7 @@ const Navigation = () => {
         </div>
         <div className="mt-4">
           <DocumentList />
-          <Item
-            onClick={handleCreate}
-            icon={PlusCircle}
-            label="Add a page"
-          ></Item>
+          <Item onClick={handleCreate} icon={Plus} label="Add a page"></Item>
           <Popover>
             <PopoverTrigger className="w-full mt-4">
               <Item label="Trash" icon={Trash}></Item>
