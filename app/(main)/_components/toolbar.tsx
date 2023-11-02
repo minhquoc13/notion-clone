@@ -9,6 +9,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 import TextareaAutosize from "react-textarea-autosize";
+import { useCoverImage } from "@/hooks/use-cover-image";
 
 interface TollbarProps {
   initialData: Doc<"documents">;
@@ -22,6 +23,9 @@ export const Toolbar = ({ initialData, preview }: TollbarProps) => {
 
   const update = useMutation(api.documents.update);
   const removeIcon = useMutation(api.documents.removeIcon);
+
+  const coverImage = useCoverImage();
+
   const enableInput = () => {
     if (preview) return;
 
@@ -74,7 +78,7 @@ export const Toolbar = ({ initialData, preview }: TollbarProps) => {
             </p>
           </IconPicker>
           <Button
-            className="rounded-full opacity-0 group-hover/icon:opacity-100 transition text-muted-foreground text-xs"
+            className="rounded-full w-8 h-8 opacity-0 group-hover/icon:opacity-100 transition text-muted-foreground text-xs"
             variant="outline"
             size="icon"
             onClick={onRemoveIcon}
@@ -105,6 +109,7 @@ export const Toolbar = ({ initialData, preview }: TollbarProps) => {
             className="text-muted-foreground text-xs"
             variant="outline"
             size="sm"
+            onClick={coverImage.onOpen}
           >
             <ImageIcon className="h-4 w-4 mr-2"></ImageIcon>
             Add cover image
