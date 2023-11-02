@@ -1,7 +1,6 @@
 import Image from "next/image";
-import React from "react";
 
-const Heroes = () => {
+export const Heroes = () => {
   return (
     <div className="flex flex-col items-center justify-center max-w-5xl">
       <div className="flex items-center">
@@ -15,7 +14,7 @@ const Heroes = () => {
           <Image
             src="/documents-dark.png"
             fill
-            className="object-contain dark:block"
+            className="object-contain hidden dark:block"
             alt="Documents"
           />
         </div>
@@ -29,7 +28,7 @@ const Heroes = () => {
           <Image
             src="/reading-dark.png"
             fill
-            className="object-contain dark:block"
+            className="object-contain hidden dark:block"
             alt="Reading"
           />
         </div>
@@ -37,5 +36,3 @@ const Heroes = () => {
     </div>
   );
 };
-
-export default Heroes;

@@ -20,7 +20,7 @@ import Item from "./item";
 import UserItem from "./user-item";
 import { useMutation, useQuery } from "convex/react";
 import { useMediaQuery } from "usehooks-ts";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ const Navigation = () => {
   const settings = useSettings();
   const params = useParams();
   const pathName = usePathname();
+  const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const create = useMutation(api.documents.create);
 
@@ -42,7 +43,7 @@ const Navigation = () => {
   const sidebarRef = useRef<ElementRef<"aside">>(null);
   const navbarRef = useRef<ElementRef<"div">>(null);
   const [isResetting, setIsResetting] = useState(false);
-  const [isColappsed, setIsCollapsed] = useState(isMobile);
+  const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
   useEffect(() => {
     if (isMobile) {
@@ -102,10 +103,8 @@ const Navigation = () => {
         "width",
         isMobile ? "0" : "calc(100% - 240px)"
       );
-      navbarRef.current.style.setProperty("left", isMobile ? "0" : "240px");
-      setTimeout(() => {
-        setIsResetting(false);
-      }, 300);
+      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "240px");
+      setTimeout(() => setIsResetting(false), 300);
     }
   };
 
@@ -114,16 +113,17 @@ const Navigation = () => {
       setIsCollapsed(true);
       setIsResetting(true);
 
-      sidebarRef.current.style.width = "0px";
+      sidebarRef.current.style.width = "0";
+      navbarRef.current.style.setProperty("width", "100%");
       navbarRef.current.style.setProperty("left", "0");
-      setTimeout(() => {
-        setIsResetting(false);
-      }, 300);
+      setTimeout(() => setIsResetting(false), 300);
     }
   };
 
   const handleCreate = () => {
-    const promise = create({ title: "Untitled" });
+    const promise = create({ title: "Untitled" }).then((documentId) =>
+      router.push(`/documents/${documentId}`)
+    );
 
     toast.promise(promise, {
       loading: "Creating a new note...",
@@ -146,41 +146,28 @@ const Navigation = () => {
           onClick={collapse}
           role="button"
           className={cn(
-            "h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100",
+            "h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
             isMobile && "opacity-100"
           )}
         >
           <ChevronsLeft className="h-6 w-6" />
         </div>
         <div>
-          <UserItem></UserItem>
-          <Item
-            label="Setting"
-            icon={Settings}
-            onClick={settings.onOpen}
-          ></Item>
-          <Item
-            label="Search"
-            icon={Search}
-            isSearch
-            onClick={search.onOpen}
-          ></Item>
-          <Item
-            onClick={handleCreate}
-            label="New page"
-            icon={PlusCircle}
-          ></Item>
+          <UserItem />
+          <Item label="Search" icon={Search} isSearch onClick={search.onOpen} />
+          <Item label="Settings" icon={Settings} onClick={settings.onOpen} />
+          <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
         </div>
         <div className="mt-4">
-          <Item onClick={handleCreate} icon={Plus} label="Add a page"></Item>
           <DocumentList />
+          <Item onClick={handleCreate} icon={Plus} label="Add a page" />
           <Popover>
             <PopoverTrigger className="w-full mt-4">
-              <Item label="Trash" icon={Trash}></Item>
+              <Item label="Trash" icon={Trash} />
             </PopoverTrigger>
             <PopoverContent
-              side={isMobile ? "bottom" : "right"}
               className="p-0 w-72"
+              side={isMobile ? "bottom" : "right"}
             >
               <TrashBox />
             </PopoverContent>
@@ -201,10 +188,10 @@ const Navigation = () => {
         )}
       >
         {!!params.documentId ? (
-          <Navbar isCollapsed={isColappsed} onResetWidth={resetWidth}></Navbar>
+          <Navbar isCollapsed={isCollapsed} onResetWidth={resetWidth} />
         ) : (
           <nav className="bg-transparent px-3 py-2 w-full">
-            {isColappsed && (
+            {isCollapsed && (
               <MenuIcon
                 onClick={resetWidth}
                 role="button"
