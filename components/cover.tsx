@@ -16,7 +16,6 @@ interface CoverProps {
   url?: string;
   preview?: boolean;
 }
-
 export const Cover = ({ url, preview }: CoverProps) => {
   const { edgestore } = useEdgeStore();
   const params = useParams();

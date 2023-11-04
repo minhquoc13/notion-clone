@@ -93,7 +93,7 @@ export const create = mutation({
       parentDocument: args.parentDocument,
       userId,
       isArchived: false,
-      isPulished: false,
+      isPublished: false,
     });
     return document;
   },
@@ -235,7 +235,7 @@ export const getById = query({
       throw new Error("Not found");
     }
 
-    if (document.isPulished && !document.isArchived) {
+    if (document.isPublished && !document.isArchived) {
       return document;
     }
 
